@@ -1,52 +1,42 @@
-import { fallbackBlogs, fallbackTrades } from '../data/fallback'
+import { fallbackPosts } from '../data/fallback'
 import { hasSupabaseConfig, supabase } from './supabase'
 
-export async function getBlogs() {
-  if (!hasSupabaseConfig) return fallbackBlogs
+export async function getPosts(type = 'all') {
+  if (!hasSupabaseConfig) {
+    return type === 'all' ? fallbackPosts : fallbackPosts.filter((post) => post.type === type)
+  }
 
-  const { data, error } = await supabase
-    .from('blogs')
+  let query = supabase
+    .from('posts')
     .select('*')
     .eq('published', true)
     .order('published_at', { ascending: false })
 
+  if (type !== 'all') query = query.eq('type', type)
+
+  const { data, error } = await query
+
   if (error) {
-    console.warn('Falling back to local blogs:', error.message)
-    return fallbackBlogs
+    console.warn('Falling back to local posts:', error.message)
+    return type === 'all' ? fallbackPosts : fallbackPosts.filter((post) => post.type === type)
   }
 
-  return data?.length ? data : fallbackBlogs
+  return data?.length ? data : type === 'all' ? fallbackPosts : fallbackPosts.filter((post) => post.type === type)
 }
 
-export async function getBlogBySlug(slug) {
-  if (!hasSupabaseConfig) return fallbackBlogs.find((blog) => blog.slug === slug)
+export async function getPostBySlug(slug) {
+  if (!hasSupabaseConfig) return fallbackPosts.find((post) => post.slug === slug)
 
   const { data, error } = await supabase
-    .from('blogs')
+    .from('posts')
     .select('*')
     .eq('slug', slug)
     .single()
 
   if (error) {
-    console.warn('Falling back to local blog:', error.message)
-    return fallbackBlogs.find((blog) => blog.slug === slug)
+    console.warn('Falling back to local post:', error.message)
+    return fallbackPosts.find((post) => post.slug === slug)
   }
 
   return data
-}
-
-export async function getTrades() {
-  if (!hasSupabaseConfig) return fallbackTrades
-
-  const { data, error } = await supabase
-    .from('trades')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.warn('Falling back to local trades:', error.message)
-    return fallbackTrades
-  }
-
-  return data?.length ? data : fallbackTrades
 }

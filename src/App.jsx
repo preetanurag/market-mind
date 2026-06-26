@@ -1,9 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
 import Nav from './components/Nav'
 import Home from './pages/Home'
-import Blogs from './pages/Blogs'
-import BlogDetail from './pages/BlogDetail'
-import Trades from './pages/Trades'
+import Posts from './pages/Posts'
+import PostDetail from './pages/PostDetail'
 import Admin from './pages/Admin'
 import './styles.css'
 
@@ -13,9 +12,10 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/blogs/:slug" element={<BlogDetail />} />
-        <Route path="/trades" element={<Trades />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/blogs" element={<Posts type="blog" eyebrow="Blogs" title="Trade-related blogs and market thinking." />} />
+        <Route path="/trades" element={<Posts type="trade_note" eyebrow="Trade Notes" title="Setups, decisions, and post-trade learning." />} />
+        <Route path="/posts/:slug" element={<PostDetail />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
     </>

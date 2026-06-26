@@ -1,31 +1,24 @@
-export const fallbackBlogs = [
+export const fallbackPosts = [
   {
-    id: 'systems-clarity',
-    slug: 'systems-clarity',
-    title: 'Making complex systems understandable',
-    excerpt: 'Notes on debugging, workflows, and the useful habit of making hidden state visible.',
+    id: 'market-process',
+    slug: 'market-process',
+    type: 'blog',
+    title: 'Building a process before chasing outcomes',
+    excerpt: 'A first note on trade journaling, watchlists, and why decision quality matters more than one green candle.',
     cover_url: '',
-    published_at: '2026-06-20',
-    content: 'A placeholder blog post. Once Supabase is configured, posts will come from the database.',
+    published_at: '2026-06-26',
+    content: 'This is placeholder content for a trade-related blog. Once Supabase is connected, posts will come from your database.',
+    tags: ['Process', 'Trading psychology', 'Journaling'],
   },
-  {
-    id: 'ai-workflows',
-    slug: 'ai-workflows',
-    title: 'AI workflows as engineering leverage',
-    excerpt: 'How MCP, context, reusable rules, and agent loops can reduce repetitive engineering effort.',
-    cover_url: '',
-    published_at: '2026-06-20',
-    content: 'A placeholder blog post about AI-assisted engineering workflows.',
-  },
-]
-
-export const fallbackTrades = [
   {
     id: 'watchlist-framework',
+    slug: 'watchlist-framework',
+    type: 'trade_note',
     title: 'Watchlist framework notes',
-    thesis: 'A thinking ledger for market ideas, portfolio intelligence, and decision quality.',
-    status: 'Researching',
+    excerpt: 'How I want to track setups, thesis, invalidation, and post-trade learning.',
+    cover_url: '',
+    published_at: '2026-06-26',
+    content: 'Placeholder trade note for watchlist thinking and decision journaling.',
     tags: ['Watchlist', 'Portfolio intelligence', 'Decision journal'],
-    created_at: '2026-06-20',
   },
 ]

@@ -2,8 +2,9 @@ import { Link, NavLink } from 'react-router-dom'
 
 const navItems = [
   ['/', 'Home'],
+  ['/posts', 'All Posts'],
   ['/blogs', 'Blogs'],
-  ['/trades', 'Trades'],
+  ['/trades', 'Trade Notes'],
   ['/admin', 'Admin'],
 ]
 
@@ -12,7 +13,7 @@ export default function Nav() {
     <header className="site-header">
       <Link className="brand" to="/">
         <span>PA</span>
-        Preet Anurag
+        Trade Notes
       </Link>
       <nav className="site-nav">
         {navItems.map(([to, label]) => (

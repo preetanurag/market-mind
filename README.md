@@ -1,6 +1,6 @@
-# Portfolio Dynamic
+# Trade Notes Dynamic Site
 
-Dynamic portfolio prototype for blogs, trades, and admin-managed content.
+A focused dynamic site for trade-related blogs, trade notes, market reflections, and decision journaling.
 
 ## Local setup
 
@@ -16,11 +16,11 @@ npm run dev
 3. Copy `.env.example` to `.env.local`.
 4. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
-Without Supabase config, the app uses fallback mock content.
+Without Supabase config, the app uses fallback mock posts.
 
-## Next admin work
+## Planned admin features
 
-- Add Supabase Auth login.
-- Add blog create/edit form.
-- Add image upload to Supabase Storage.
-- Add trade note create/edit form.
+- Supabase Auth login.
+- Create/edit blog posts.
+- Create/edit trade notes with symbol, setup, thesis, invalidation, outcome.
+- Upload cover images to Supabase Storage.

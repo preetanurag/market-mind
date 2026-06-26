@@ -5,21 +5,21 @@ export default function Home() {
     <main>
       <section className="hero section-shell">
         <div>
-          <p className="eyebrow">Dynamic portfolio experiment</p>
-          <h1>I like making complex things feel understandable.</h1>
+          <p className="eyebrow">Trade journal / Market blog</p>
+          <h1>A place to write down the trade before the market rewrites the memory.</h1>
           <p className="hero-text">
-            This version keeps the personal portfolio feel, but can fetch blogs and trades from an API-backed content source.
+            This is a focused home for my market notes, trade-related blogs, watchlist ideas, process experiments, and post-trade reflections.
           </p>
           <div className="hero-actions">
-            <Link className="button primary" to="/blogs">Read blogs</Link>
-            <Link className="button ghost" to="/trades">View trades</Link>
+            <Link className="button primary" to="/posts">Read all posts</Link>
+            <Link className="button ghost" to="/trades">Trade notes</Link>
           </div>
         </div>
         <aside className="signal-card">
-          <p className="eyebrow">Why dynamic?</p>
-          <h2>Post once, render everywhere.</h2>
+          <p className="eyebrow">Core idea</p>
+          <h2>Process over impulse.</h2>
           <p>
-            Blogs, trade notes, and images can live in Supabase, while this app stays fast and deployable.
+            Capture thesis, setup, invalidation, emotion, and outcome. The goal is not to sound right later, but to think better next time.
           </p>
         </aside>
       </section>
