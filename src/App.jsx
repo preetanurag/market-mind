@@ -12,11 +12,10 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/posts" element={<Posts />} />
-        <Route path="/blogs" element={<Posts type="blog" eyebrow="Blogs" title="Trade-related blogs and market thinking." />} />
+        <Route path="/blogs" element={<Posts type="blog" eyebrow="Blogs" title="Market notes, psychology, and process thinking." />} />
         <Route path="/trades" element={<Posts type="trade_note" eyebrow="Trade Notes" title="Setups, decisions, and post-trade learning." />} />
         <Route path="/posts/:slug" element={<PostDetail />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/preet-admin" element={<Admin />} />
       </Routes>
     </>
   )
