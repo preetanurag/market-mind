@@ -45,9 +45,14 @@ create table if not exists post_comments (
   post_id uuid not null references posts(id) on delete cascade,
   author_name text not null,
   body text not null,
+  parent_id uuid references post_comments(id) on delete cascade,
   approved boolean default true,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  edited_at timestamptz
 );
+
+alter table post_comments add column if not exists parent_id uuid references post_comments(id) on delete cascade;
+alter table post_comments add column if not exists edited_at timestamptz;
 
 alter table admins enable row level security;
 alter table posts enable row level security;
@@ -141,6 +146,16 @@ create policy "Public can create approved comments"
     approved = true
     and length(trim(author_name)) between 1 and 80
     and length(trim(body)) between 1 and 2000
+    and (
+      parent_id is null
+      or exists (
+        select 1
+        from post_comments parent
+        where parent.id = post_comments.parent_id
+          and parent.post_id = post_comments.post_id
+          and parent.approved = true
+      )
+    )
   );
 
 drop policy if exists "Admins can read all comments" on post_comments;

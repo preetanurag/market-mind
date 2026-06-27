@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Edit3, ExternalLink, FilePenLine, ImageUp, LogIn, LogOut, Save, Trash2, X } from 'lucide-react'
+import { Edit3, ExternalLink, FilePenLine, ImageUp, LogIn, LogOut, MessageCircle, Reply, Save, Trash2, X } from 'lucide-react'
 import RichTextEditor from '../components/RichTextEditor'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
@@ -48,8 +48,13 @@ export default function Admin() {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
   const [posts, setPosts] = useState([])
+  const [comments, setComments] = useState([])
   const [form, setForm] = useState(emptyForm)
   const [editingPostId, setEditingPostId] = useState(null)
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editingCommentBody, setEditingCommentBody] = useState('')
+  const [replyingCommentId, setReplyingCommentId] = useState(null)
+  const [adminReplyBody, setAdminReplyBody] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [isCoverUploading, setIsCoverUploading] = useState(false)
   const allowedEmails = useMemo(getAllowedEmails, [])
@@ -70,6 +75,7 @@ export default function Admin() {
   useEffect(() => {
     if (!isAllowedAdmin) return
     loadPosts()
+    loadComments()
   }, [isAllowedAdmin])
 
   async function loadPosts() {
@@ -84,6 +90,38 @@ export default function Admin() {
     }
 
     setPosts(data || [])
+  }
+
+  async function loadComments() {
+    const { data, error } = await supabase
+      .from('post_comments')
+      .select('id, post_id, parent_id, author_name, body, approved, created_at, edited_at')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    const commentRows = data || []
+    const postIds = [...new Set(commentRows.map((comment) => comment.post_id).filter(Boolean))]
+    let postMap = {}
+
+    if (postIds.length) {
+      const { data: postRows, error: postsError } = await supabase
+        .from('posts')
+        .select('id, slug, title')
+        .in('id', postIds)
+
+      if (postsError) {
+        setMessage(postsError.message)
+        return
+      }
+
+      postMap = Object.fromEntries((postRows || []).map((post) => [post.id, post]))
+    }
+
+    setComments(commentRows.map((comment) => ({ ...comment, post: postMap[comment.post_id] })))
   }
 
   async function startEditing(postId) {
@@ -140,6 +178,88 @@ export default function Admin() {
     if (editingPostId === post.id) resetEditor()
     setMessage('Post deleted.')
     await loadPosts()
+    await loadComments()
+  }
+
+  function startEditingComment(comment) {
+    setEditingCommentId(comment.id)
+    setEditingCommentBody(comment.body)
+    setReplyingCommentId(null)
+    setAdminReplyBody('')
+  }
+
+  function cancelCommentEdit() {
+    setEditingCommentId(null)
+    setEditingCommentBody('')
+  }
+
+  async function saveCommentEdit(comment) {
+    const nextBody = editingCommentBody.trim()
+    if (!nextBody) {
+      setMessage('Comment cannot be empty.')
+      return
+    }
+
+    const { error } = await supabase
+      .from('post_comments')
+      .update({ body: nextBody, edited_at: new Date().toISOString() })
+      .eq('id', comment.id)
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    cancelCommentEdit()
+    setMessage('Comment updated.')
+    await loadComments()
+  }
+
+  async function deleteComment(comment) {
+    const confirmed = window.confirm(`Delete comment by ${comment.author_name}? Replies under it will also be removed.`)
+    if (!confirmed) return
+
+    const { error } = await supabase.from('post_comments').delete().eq('id', comment.id)
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    setMessage('Comment deleted.')
+    await loadComments()
+  }
+
+  function startReplyingToComment(comment) {
+    setReplyingCommentId(comment.id)
+    setAdminReplyBody('')
+    cancelCommentEdit()
+  }
+
+  async function saveAdminReply(comment) {
+    const replyBody = adminReplyBody.trim()
+    if (!replyBody) {
+      setMessage('Reply cannot be empty.')
+      return
+    }
+
+    const { error } = await supabase.from('post_comments').insert({
+      post_id: comment.post_id,
+      parent_id: comment.id,
+      author_name: 'Preet Anurag',
+      body: replyBody,
+      approved: true,
+    })
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    setReplyingCommentId(null)
+    setAdminReplyBody('')
+    setMessage('Reply posted.')
+    await loadComments()
   }
 
   async function handleLogin(event) {
@@ -400,25 +520,74 @@ export default function Admin() {
           <button className="button primary" type="submit" disabled={isSaving}><Save size={18} /> {isSaving ? 'Saving...' : editingPostId ? 'Update post' : 'Save post'}</button>
         </form>
 
-        <aside className="admin-panel post-list-panel">
-          <h2>Recent posts</h2>
-          {posts.length ? (
-            <div className="admin-post-list">
-              {posts.map((post) => (
-                <article key={post.id}>
-                  <span>{post.type === 'trade_note' ? 'Trade note' : 'Blog'} · {post.published ? 'Published' : 'Draft'}</span>
-                  <h3>{post.title}</h3>
-                  <div className="post-actions">
-                    <button type="button" onClick={() => startEditing(post.id)}><Edit3 size={14} /> Edit</button>
-                    <Link to={`/posts/${post.slug}`}><ExternalLink size={14} /> Open</Link>
-                    <button className="danger-link" type="button" onClick={() => deletePost(post)}><Trash2 size={14} /> Delete</button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p>No posts yet. The first one is always weirdly satisfying.</p>
-          )}
+        <aside className="admin-side">
+          <section className="admin-panel post-list-panel">
+            <h2>Recent posts</h2>
+            {posts.length ? (
+              <div className="admin-post-list">
+                {posts.map((post) => (
+                  <article key={post.id}>
+                    <span>{post.type === 'trade_note' ? 'Trade note' : 'Blog'} · {post.published ? 'Published' : 'Draft'}</span>
+                    <h3>{post.title}</h3>
+                    <div className="post-actions">
+                      <button type="button" onClick={() => startEditing(post.id)}><Edit3 size={14} /> Edit</button>
+                      <Link to={`/posts/${post.slug}`}><ExternalLink size={14} /> Open</Link>
+                      <button className="danger-link" type="button" onClick={() => deletePost(post)}><Trash2 size={14} /> Delete</button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p>No posts yet. The first one is always weirdly satisfying.</p>
+            )}
+          </section>
+
+          <section className="admin-panel comment-admin-panel">
+            <h2><MessageCircle size={20} /> Comments</h2>
+            {comments.length ? (
+              <div className="admin-comment-list">
+                {comments.map((comment) => (
+                  <article key={comment.id}>
+                    <div className="admin-comment-meta">
+                      <strong>{comment.author_name}</strong>
+                      <span>{comment.parent_id ? 'Reply' : 'Comment'}</span>
+                      {comment.post ? <Link to={`/posts/${comment.post.slug}`}>{comment.post.title}</Link> : null}
+                    </div>
+
+                    {editingCommentId === comment.id ? (
+                      <div className="admin-comment-editor">
+                        <textarea value={editingCommentBody} onChange={(event) => setEditingCommentBody(event.target.value)} rows="4" />
+                        <div className="post-actions">
+                          <button type="button" onClick={() => saveCommentEdit(comment)}><Save size={14} /> Save</button>
+                          <button type="button" onClick={cancelCommentEdit}><X size={14} /> Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>{comment.body}</p>
+                    )}
+
+                    {replyingCommentId === comment.id ? (
+                      <div className="admin-comment-editor">
+                        <textarea value={adminReplyBody} onChange={(event) => setAdminReplyBody(event.target.value)} rows="3" placeholder={`Reply to ${comment.author_name}`} />
+                        <div className="post-actions">
+                          <button type="button" onClick={() => saveAdminReply(comment)}><Reply size={14} /> Post reply</button>
+                          <button type="button" onClick={() => { setReplyingCommentId(null); setAdminReplyBody('') }}><X size={14} /> Cancel</button>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="post-actions">
+                      <button type="button" onClick={() => startReplyingToComment(comment)}><Reply size={14} /> Reply</button>
+                      <button type="button" onClick={() => startEditingComment(comment)}><Edit3 size={14} /> Edit</button>
+                      <button className="danger-link" type="button" onClick={() => deleteComment(comment)}><Trash2 size={14} /> Delete</button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p>No comments yet.</p>
+            )}
+          </section>
         </aside>
       </div>
     </main>
