@@ -26,12 +26,10 @@ create table if not exists posts (
   updated_at timestamptz default now()
 );
 
-create table if not exists post_views (
-  id uuid primary key default gen_random_uuid(),
-  post_id uuid not null references posts(id) on delete cascade,
-  visitor_id text not null,
-  created_at timestamptz default now(),
-  unique (post_id, visitor_id)
+create table if not exists post_metrics (
+  post_id uuid primary key references posts(id) on delete cascade,
+  view_count integer not null default 0,
+  updated_at timestamptz default now()
 );
 
 create table if not exists post_likes (
@@ -53,7 +51,7 @@ create table if not exists post_comments (
 
 alter table admins enable row level security;
 alter table posts enable row level security;
-alter table post_views enable row level security;
+alter table post_metrics enable row level security;
 alter table post_likes enable row level security;
 alter table post_comments enable row level security;
 
@@ -93,15 +91,33 @@ create policy "Admins can delete posts"
   to authenticated
   using (exists (select 1 from admins where admins.user_id = auth.uid()));
 
-drop policy if exists "Public can read post views" on post_views;
-create policy "Public can read post views"
-  on post_views for select
+drop policy if exists "Public can read post metrics" on post_metrics;
+create policy "Public can read post metrics"
+  on post_metrics for select
   using (true);
 
-drop policy if exists "Public can record post views" on post_views;
-create policy "Public can record post views"
-  on post_views for insert
-  with check (visitor_id is not null and length(visitor_id) between 8 and 120);
+create or replace function increment_post_view(target_post_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  next_count integer;
+begin
+  insert into post_metrics (post_id, view_count, updated_at)
+  values (target_post_id, 1, now())
+  on conflict (post_id)
+  do update set
+    view_count = post_metrics.view_count + 1,
+    updated_at = now()
+  returning view_count into next_count;
+
+  return next_count;
+end;
+$$;
+
+grant execute on function increment_post_view(uuid) to anon, authenticated;
 
 drop policy if exists "Public can read post likes" on post_likes;
 create policy "Public can read post likes"

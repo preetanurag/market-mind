@@ -25,18 +25,18 @@ export default function EngagementPanel({ post }) {
   useEffect(() => {
     if (!hasSupabaseConfig || !post?.id) return
 
-    recordView()
-    loadEngagement()
+    loadEngagement().then(recordView)
   }, [post?.id])
 
   async function recordView() {
-    await supabase
-      .from('post_views')
-      .upsert({ post_id: post.id, visitor_id: visitorId }, { onConflict: 'post_id,visitor_id' })
+    const { data, error } = await supabase.rpc('increment_post_view', { target_post_id: post.id })
+    if (!error && typeof data === 'number') {
+      setCounts((current) => ({ ...current, views: data }))
+    }
   }
 
   async function loadEngagement() {
-    const [commentsResult, likesResult, viewsResult, likedResult] = await Promise.all([
+    const [commentsResult, likesResult, metricsResult, likedResult] = await Promise.all([
       supabase
         .from('post_comments')
         .select('id, author_name, body, created_at', { count: 'exact' })
@@ -44,7 +44,7 @@ export default function EngagementPanel({ post }) {
         .eq('approved', true)
         .order('created_at', { ascending: false }),
       supabase.from('post_likes').select('id', { count: 'exact', head: true }).eq('post_id', post.id),
-      supabase.from('post_views').select('id', { count: 'exact', head: true }).eq('post_id', post.id),
+      supabase.from('post_metrics').select('view_count').eq('post_id', post.id).maybeSingle(),
       supabase.from('post_likes').select('id').eq('post_id', post.id).eq('visitor_id', visitorId).maybeSingle(),
     ])
 
@@ -52,7 +52,7 @@ export default function EngagementPanel({ post }) {
     setCounts({
       comments: commentsResult.count || 0,
       likes: likesResult.count || 0,
-      views: viewsResult.count || 0,
+      views: metricsResult.data?.view_count || 0,
     })
     setLiked(Boolean(likedResult.data))
   }
