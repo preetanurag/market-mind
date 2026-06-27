@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, BookOpen, Brain, CircleDollarSign, FileQuestion, LineChart, LoaderCircle, ShieldAlert, Target, Workflow } from 'lucide-react'
 import AuthorBox from '../components/AuthorBox'
+import EngagementPanel from '../components/EngagementPanel'
 import RichContent from '../components/RichContent'
 import { getPostBySlug } from '../lib/content'
 
@@ -63,6 +64,7 @@ export default function PostDetail() {
         </section>
       ) : null}
       <RichContent content={post.content} />
+      <EngagementPanel post={post} />
       {post.type === 'blog' ? <AuthorBox /> : null}
     </main>
   )

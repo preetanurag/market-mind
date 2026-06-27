@@ -26,8 +26,36 @@ create table if not exists posts (
   updated_at timestamptz default now()
 );
 
+create table if not exists post_views (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  visitor_id text not null,
+  created_at timestamptz default now(),
+  unique (post_id, visitor_id)
+);
+
+create table if not exists post_likes (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  visitor_id text not null,
+  created_at timestamptz default now(),
+  unique (post_id, visitor_id)
+);
+
+create table if not exists post_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  author_name text not null,
+  body text not null,
+  approved boolean default true,
+  created_at timestamptz default now()
+);
+
 alter table admins enable row level security;
 alter table posts enable row level security;
+alter table post_views enable row level security;
+alter table post_likes enable row level security;
+alter table post_comments enable row level security;
 
 drop policy if exists "Users can read their own admin row" on admins;
 create policy "Users can read their own admin row"
@@ -62,6 +90,59 @@ create policy "Admins can update posts"
 drop policy if exists "Admins can delete posts" on posts;
 create policy "Admins can delete posts"
   on posts for delete
+  to authenticated
+  using (exists (select 1 from admins where admins.user_id = auth.uid()));
+
+drop policy if exists "Public can read post views" on post_views;
+create policy "Public can read post views"
+  on post_views for select
+  using (true);
+
+drop policy if exists "Public can record post views" on post_views;
+create policy "Public can record post views"
+  on post_views for insert
+  with check (visitor_id is not null and length(visitor_id) between 8 and 120);
+
+drop policy if exists "Public can read post likes" on post_likes;
+create policy "Public can read post likes"
+  on post_likes for select
+  using (true);
+
+drop policy if exists "Public can like posts" on post_likes;
+create policy "Public can like posts"
+  on post_likes for insert
+  with check (visitor_id is not null and length(visitor_id) between 8 and 120);
+
+drop policy if exists "Public can read approved comments" on post_comments;
+create policy "Public can read approved comments"
+  on post_comments for select
+  using (approved = true);
+
+drop policy if exists "Public can create approved comments" on post_comments;
+create policy "Public can create approved comments"
+  on post_comments for insert
+  with check (
+    approved = true
+    and length(trim(author_name)) between 1 and 80
+    and length(trim(body)) between 1 and 2000
+  );
+
+drop policy if exists "Admins can read all comments" on post_comments;
+create policy "Admins can read all comments"
+  on post_comments for select
+  to authenticated
+  using (exists (select 1 from admins where admins.user_id = auth.uid()));
+
+drop policy if exists "Admins can update comments" on post_comments;
+create policy "Admins can update comments"
+  on post_comments for update
+  to authenticated
+  using (exists (select 1 from admins where admins.user_id = auth.uid()))
+  with check (exists (select 1 from admins where admins.user_id = auth.uid()));
+
+drop policy if exists "Admins can delete comments" on post_comments;
+create policy "Admins can delete comments"
+  on post_comments for delete
   to authenticated
   using (exists (select 1 from admins where admins.user_id = auth.uid()));
 

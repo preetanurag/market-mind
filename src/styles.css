@@ -853,6 +853,120 @@ p { color: var(--muted); line-height: 1.75; }
   opacity: 0.58;
 }
 
+.engagement-panel {
+  display: grid;
+  gap: 1rem;
+  max-width: 780px;
+  margin-top: 3rem;
+  padding: clamp(1.2rem, 4vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(99, 179, 255, 0.07);
+  box-shadow: var(--shadow);
+}
+
+.engagement-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+
+.engagement-stats span,
+.engagement-stats button {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(7, 17, 31, 0.52);
+  padding: 0 .85rem;
+  font: inherit;
+  font-weight: 900;
+}
+
+.engagement-stats button {
+  cursor: pointer;
+}
+
+.engagement-stats button:hover,
+.engagement-stats button.liked {
+  color: var(--cyan);
+  border-color: rgba(115, 240, 255, 0.45);
+  background: rgba(115, 240, 255, 0.1);
+}
+
+.comment-form {
+  display: grid;
+  gap: .85rem;
+  margin-top: .5rem;
+}
+
+.comment-form h2 {
+  margin-bottom: .1rem;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+}
+
+.comment-form label {
+  display: grid;
+  gap: .45rem;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.comment-form input,
+.comment-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(7, 17, 31, 0.72);
+  color: var(--ink);
+  padding: .85rem .9rem;
+  font: inherit;
+}
+
+.comment-form textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.comment-form .button {
+  width: fit-content;
+}
+
+.comment-list {
+  display: grid;
+  gap: .75rem;
+}
+
+.comment-list article {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(7, 17, 31, 0.45);
+}
+
+.comment-list strong,
+.comment-list time {
+  display: inline-flex;
+  margin-right: .6rem;
+}
+
+.comment-list strong {
+  color: var(--ink);
+}
+
+.comment-list time {
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.comment-list p,
+.no-comments {
+  margin-bottom: 0;
+}
+
 @media (max-width: 900px) {
   .admin-heading,
   .admin-layout {
