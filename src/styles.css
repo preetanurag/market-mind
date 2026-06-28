@@ -860,6 +860,53 @@ p { color: var(--muted); line-height: 1.75; }
   gap: .55rem;
 }
 
+.collapsible-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.collapsible-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .85rem;
+  width: 100%;
+  min-height: 3.1rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--ink);
+  background: rgba(7, 17, 31, 0.52);
+  padding: .75rem .95rem;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.collapsible-trigger:hover {
+  border-color: rgba(115, 240, 255, 0.45);
+  background: rgba(115, 240, 255, 0.08);
+}
+
+.collapsible-trigger span {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.collapsible-trigger span:last-child {
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.collapsible-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-collapsible-trigger {
+  margin-bottom: 1rem;
+}
+
 .admin-comment-list {
   display: grid;
   gap: .85rem;

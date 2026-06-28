@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Edit3, ExternalLink, FilePenLine, ImageUp, LogIn, LogOut, MessageCircle, Reply, Save, Trash2, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Edit3, ExternalLink, FilePenLine, ImageUp, LogIn, LogOut, MessageCircle, Reply, Save, Trash2, X } from 'lucide-react'
 import RichTextEditor from '../components/RichTextEditor'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
@@ -55,6 +55,7 @@ export default function Admin() {
   const [editingCommentBody, setEditingCommentBody] = useState('')
   const [replyingCommentId, setReplyingCommentId] = useState(null)
   const [adminReplyBody, setAdminReplyBody] = useState('')
+  const [isAdminCommentsOpen, setIsAdminCommentsOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isCoverUploading, setIsCoverUploading] = useState(false)
   const allowedEmails = useMemo(getAllowedEmails, [])
@@ -543,50 +544,61 @@ export default function Admin() {
           </section>
 
           <section className="admin-panel comment-admin-panel">
-            <h2><MessageCircle size={20} /> Comments</h2>
-            {comments.length ? (
-              <div className="admin-comment-list">
-                {comments.map((comment) => (
-                  <article key={comment.id}>
-                    <div className="admin-comment-meta">
-                      <strong>{comment.author_name}</strong>
-                      <span>{comment.parent_id ? 'Reply' : 'Comment'}</span>
-                      {comment.post ? <Link to={`/posts/${comment.post.slug}`}>{comment.post.title}</Link> : null}
-                    </div>
+            <button
+              className="collapsible-trigger admin-collapsible-trigger"
+              type="button"
+              aria-expanded={isAdminCommentsOpen}
+              onClick={() => setIsAdminCommentsOpen((current) => !current)}
+            >
+              <span><MessageCircle size={20} /> Comments</span>
+              <span>{comments.length} total {isAdminCommentsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</span>
+            </button>
 
-                    {editingCommentId === comment.id ? (
-                      <div className="admin-comment-editor">
-                        <textarea value={editingCommentBody} onChange={(event) => setEditingCommentBody(event.target.value)} rows="4" />
-                        <div className="post-actions">
-                          <button type="button" onClick={() => saveCommentEdit(comment)}><Save size={14} /> Save</button>
-                          <button type="button" onClick={cancelCommentEdit}><X size={14} /> Cancel</button>
-                        </div>
+            {isAdminCommentsOpen ? (
+              comments.length ? (
+                <div className="admin-comment-list">
+                  {comments.map((comment) => (
+                    <article key={comment.id}>
+                      <div className="admin-comment-meta">
+                        <strong>{comment.author_name}</strong>
+                        <span>{comment.parent_id ? 'Reply' : 'Comment'}</span>
+                        {comment.post ? <Link to={`/posts/${comment.post.slug}`}>{comment.post.title}</Link> : null}
                       </div>
-                    ) : (
-                      <p>{comment.body}</p>
-                    )}
 
-                    {replyingCommentId === comment.id ? (
-                      <div className="admin-comment-editor">
-                        <textarea value={adminReplyBody} onChange={(event) => setAdminReplyBody(event.target.value)} rows="3" placeholder={`Reply to ${comment.author_name}`} />
-                        <div className="post-actions">
-                          <button type="button" onClick={() => saveAdminReply(comment)}><Reply size={14} /> Post reply</button>
-                          <button type="button" onClick={() => { setReplyingCommentId(null); setAdminReplyBody('') }}><X size={14} /> Cancel</button>
+                      {editingCommentId === comment.id ? (
+                        <div className="admin-comment-editor">
+                          <textarea value={editingCommentBody} onChange={(event) => setEditingCommentBody(event.target.value)} rows="4" />
+                          <div className="post-actions">
+                            <button type="button" onClick={() => saveCommentEdit(comment)}><Save size={14} /> Save</button>
+                            <button type="button" onClick={cancelCommentEdit}><X size={14} /> Cancel</button>
+                          </div>
                         </div>
-                      </div>
-                    ) : null}
+                      ) : (
+                        <p>{comment.body}</p>
+                      )}
 
-                    <div className="post-actions">
-                      <button type="button" onClick={() => startReplyingToComment(comment)}><Reply size={14} /> Reply</button>
-                      <button type="button" onClick={() => startEditingComment(comment)}><Edit3 size={14} /> Edit</button>
-                      <button className="danger-link" type="button" onClick={() => deleteComment(comment)}><Trash2 size={14} /> Delete</button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p>No comments yet.</p>
-            )}
+                      {replyingCommentId === comment.id ? (
+                        <div className="admin-comment-editor">
+                          <textarea value={adminReplyBody} onChange={(event) => setAdminReplyBody(event.target.value)} rows="3" placeholder={`Reply to ${comment.author_name}`} />
+                          <div className="post-actions">
+                            <button type="button" onClick={() => saveAdminReply(comment)}><Reply size={14} /> Post reply</button>
+                            <button type="button" onClick={() => { setReplyingCommentId(null); setAdminReplyBody('') }}><X size={14} /> Cancel</button>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <div className="post-actions">
+                        <button type="button" onClick={() => startReplyingToComment(comment)}><Reply size={14} /> Reply</button>
+                        <button type="button" onClick={() => startEditingComment(comment)}><Edit3 size={14} /> Edit</button>
+                        <button className="danger-link" type="button" onClick={() => deleteComment(comment)}><Trash2 size={14} /> Delete</button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-comments">No comments yet.</p>
+              )
+            ) : null}
           </section>
         </aside>
       </div>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Eye, Heart, MessageCircle, Reply, Send, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Eye, Heart, MessageCircle, Reply, Send, X } from 'lucide-react'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
 function getVisitorId() {
@@ -44,6 +44,7 @@ export default function EngagementPanel({ post }) {
   const [replyingTo, setReplyingTo] = useState(null)
   const [replyBody, setReplyBody] = useState('')
   const [message, setMessage] = useState('')
+  const [isCommentsOpen, setIsCommentsOpen] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isReplying, setIsReplying] = useState(false)
   const commentTree = useMemo(() => buildCommentTree(comments), [comments])
@@ -200,29 +201,45 @@ export default function EngagementPanel({ post }) {
         <span><MessageCircle size={18} /> {counts.comments} comments</span>
       </div>
 
-      <form className="comment-form" onSubmit={handleComment}>
-        <h2>Join the note</h2>
-        <label>
-          Name
-          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" />
-        </label>
-        <label>
-          Comment
-          <textarea value={body} onChange={(event) => setBody(event.target.value)} rows="4" placeholder="Share a thought, question, or reflection." />
-        </label>
-        {message ? <p className={message.includes('posted') ? 'success-message' : 'form-message'}>{message}</p> : null}
-        <button className="button primary" type="submit" disabled={isSubmitting}>
-          <Send size={17} /> {isSubmitting ? 'Posting...' : 'Post comment'}
+      <div className="collapsible-section">
+        <button
+          className="collapsible-trigger"
+          type="button"
+          aria-expanded={isCommentsOpen}
+          onClick={() => setIsCommentsOpen((current) => !current)}
+        >
+          <span><MessageCircle size={18} /> Comments and discussion</span>
+          <span>{counts.comments} total {isCommentsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</span>
         </button>
-      </form>
 
-      {commentTree.length ? (
-        <div className="comment-list">
-          {commentTree.map((comment) => renderComment(comment))}
-        </div>
-      ) : (
-        <p className="no-comments">No comments yet. First thoughtful note gets the quiet little dopamine badge.</p>
-      )}
+        {isCommentsOpen ? (
+          <div className="collapsible-content">
+            <form className="comment-form" onSubmit={handleComment}>
+              <h2>Join the note</h2>
+              <label>
+                Name
+                <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" />
+              </label>
+              <label>
+                Comment
+                <textarea value={body} onChange={(event) => setBody(event.target.value)} rows="4" placeholder="Share a thought, question, or reflection." />
+              </label>
+              {message ? <p className={message.includes('posted') ? 'success-message' : 'form-message'}>{message}</p> : null}
+              <button className="button primary" type="submit" disabled={isSubmitting}>
+                <Send size={17} /> {isSubmitting ? 'Posting...' : 'Post comment'}
+              </button>
+            </form>
+
+            {commentTree.length ? (
+              <div className="comment-list">
+                {commentTree.map((comment) => renderComment(comment))}
+              </div>
+            ) : (
+              <p className="no-comments">No comments yet. First thoughtful note gets the quiet little dopamine badge.</p>
+            )}
+          </div>
+        ) : null}
+      </div>
     </section>
   )
 }
