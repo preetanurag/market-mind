@@ -71,12 +71,75 @@ a { color: inherit; }
   width: 2.35rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  color: #03111f;
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.32), transparent 25%),
+    linear-gradient(135deg, #06213a, #07111f);
+  box-shadow:
+    inset 0 0 0 1px rgba(115, 240, 255, 0.2),
+    0 0 24px rgba(99, 179, 255, 0.24);
 }
 .brand-mark {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  overflow: visible;
+}
+
+.brand-brain-left,
+.brand-brain-right,
+.brand-brain-split,
+.brand-brain-folds,
+.brand-candle-red,
+.brand-candle-green {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-brain-left,
+.brand-brain-right {
+  stroke: #07111f;
+  stroke-width: 2.4;
+}
+
+.brand-brain-left {
+  fill: #e8fbff;
+}
+
+.brand-brain-right {
+  fill: #20cfff;
+}
+
+.brand-brain-split {
+  fill: none;
+  stroke: #07111f;
+  stroke-width: 3.2;
+}
+
+.brand-brain-folds {
+  fill: none;
+  stroke: #07111f;
+  stroke-width: 2.3;
+}
+
+.brand-candle-red,
+.brand-candle-green {
+  fill: none;
+  stroke-width: 2.8;
+}
+
+.brand-candle-red {
+  stroke: #ff5a64;
+}
+
+.brand-candle-green {
+  stroke: #2ff2a0;
+}
+
+.brand-candle-red-body {
+  fill: #ff5a64;
+}
+
+.brand-candle-green-body {
+  fill: #2ff2a0;
 }
 .site-nav { gap: .15rem; padding: .35rem; }
 .site-nav a {
