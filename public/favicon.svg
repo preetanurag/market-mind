@@ -1,12 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="18" fill="#07111f"/>
-  <circle cx="32" cy="31" r="27" fill="#06213a"/>
-  <path d="M30.6 13.5c-2.8-3-8.1-2.6-10.2 1.3-4-.3-7.6 2.7-7.9 6.8-3.7 1.1-6.4 4.6-6.4 8.8 0 3 1.4 5.7 3.5 7.4-.5 4.3 2.8 8.1 7 8.3 1.7 4.3 7.1 5.9 10.8 3.1 1.9 1.2 4.3-.1 4.3-2.4V17.1c0-1.4-.4-2.5-1.1-3.6Z" fill="#e8fbff" stroke="#07111f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M33.4 13.5c2.8-3 8.1-2.6 10.2 1.3 4-.3 7.6 2.7 7.9 6.8 3.7 1.1 6.4 4.6 6.4 8.8 0 3-1.4 5.7-3.5 7.4.5 4.3-2.8 8.1-7 8.3-1.7 4.3-7.1 5.9-10.8 3.1-1.9 1.2-4.3-.1-4.3-2.4V17.1c0-1.4.4-2.5 1.1-3.6Z" fill="#20cfff" stroke="#07111f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M32 16v31" fill="none" stroke="#07111f" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M26.7 18.4c-3.6-.9-6.6.9-7.6 4.1m4.8 1.5c-3.6.1-6.1 2.1-7.1 5.4m9.4 2.1c-3.2.2-5.3 2-6.2 4.8m6.5 5.2c-2.8.3-4.9-.8-6.4-3.1m17.2-20c3.6-.9 6.6.9 7.6 4.1M40.1 24c3.6.1 6.1 2.1 7.1 5.4m-9.4 2.1c3.2.2 5.3 2 6.2 4.8m-6.5 5.2c2.8.3 4.9-.8 6.4-3.1" fill="none" stroke="#07111f" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M17.2 55V42.5" fill="none" stroke="#ff5a64" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M13.9 46.5h6.6v5.9h-6.6z" fill="#ff5a64"/>
-  <path d="M46.8 55V42.5" fill="none" stroke="#2ff2a0" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M43.5 44.2h6.6v7h-6.6z" fill="#2ff2a0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="MarketAndMind favicon">
+  <rect width="256" height="256" rx="36" fill="#000000"/>
+  <g transform="matrix(0.397260 0 0 0.397260 -75.397260 -82.945205)" fill="#FFFFFF">
+    <path d="M220 610        L220 440        Q220 404 256 404        Q272 404 284 416        L366 498        Q382 514 398 498        L484 412        Q512 384 540 412        L626 498        Q642 514 658 498        L740 416        Q752 404 768 404        Q804 404 804 440        L804 610        Q804 646 768 646        Q732 646 732 610        L732 516        L682 566        Q642 606 602 566        L512 476        L422 566        Q382 606 342 566        L292 516        L292 610        Q292 646 256 646        Q220 646 220 610        Z" />
+    <rect x="476" y="532" width="72" height="126" rx="36" />
+  </g>
 </svg>
