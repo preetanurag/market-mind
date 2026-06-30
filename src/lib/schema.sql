@@ -177,6 +177,31 @@ create policy "Admins can delete comments"
   to authenticated
   using (exists (select 1 from admins where admins.user_id = auth.uid()));
 
+-- If comment deletion does not work from the admin UI, re-run the three
+-- comment admin policies above and confirm your signed-in user exists in admins.
+create or replace function delete_comment_as_admin(target_comment_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  deleted_count integer;
+begin
+  if not exists (select 1 from admins where admins.user_id = auth.uid()) then
+    raise exception 'Not authorized to delete comments';
+  end if;
+
+  delete from post_comments
+  where id = target_comment_id;
+
+  get diagnostics deleted_count = row_count;
+  return deleted_count > 0;
+end;
+$$;
+
+grant execute on function delete_comment_as_admin(uuid) to authenticated;
+
 insert into storage.buckets (id, name, public)
 values ('post-images', 'post-images', true)
 on conflict (id) do update set public = true;

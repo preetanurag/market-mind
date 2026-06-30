@@ -220,10 +220,17 @@ export default function Admin() {
     const confirmed = window.confirm(`Delete comment by ${comment.author_name}? Replies under it will also be removed.`)
     if (!confirmed) return
 
-    const { error } = await supabase.from('post_comments').delete().eq('id', comment.id)
+    const { data, error } = await supabase.rpc('delete_comment_as_admin', {
+      target_comment_id: comment.id,
+    })
 
     if (error) {
       setMessage(error.message)
+      return
+    }
+
+    if (!data) {
+      setMessage('Comment was not deleted. Please make sure your admin user exists in Supabase.')
       return
     }
 
@@ -429,6 +436,7 @@ export default function Admin() {
           <p className="eyebrow">Private admin</p>
           <h1>Publish trade blogs and trade notes.</h1>
           <p>Signed in as {session.user.email}</p>
+          {message ? <p className={message.includes('saved') || message.includes('updated') || message.includes('deleted') || message.includes('uploaded') || message.includes('inserted') || message.includes('Uploading') || message.includes('posted') ? 'success-message' : 'form-message'}>{message}</p> : null}
         </div>
         <button className="button ghost" type="button" onClick={handleLogout}><LogOut size={18} /> Logout</button>
       </div>
